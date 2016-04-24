@@ -160,7 +160,7 @@ new TableShardingStrategy("order_id", new SingleKeyShardingAlgorithm()))
 - 多分片策略
 
 ```java
-new TableShardingStrategy(Arrays.asList("order_id"，"order_type", "order_date"), new MultiKeyShardingAlgorithm()))
+new TableShardingStrategy(Arrays.asList("order_id", "order_type", "order_date"), new MultiKeyShardingAlgorithm()))
 ```
 
 ### 分片算法
@@ -371,11 +371,11 @@ new ShardingDataSource(shardingRule);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
         try (
                 Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
+                PreparedStatement preparedStatement = conn.prepareStatement(sql);
                 ) {
-            pstmt.setInt(1, 10);
-            pstmt.setInt(2, 1001);
-            ResultSet rs = pstmt.executeQuery();
+            preparedStatement.setInt(1, 10);
+            preparedStatement.setInt(2, 1001);
+            ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 System.out.println(rs.getInt(1));
                 System.out.println(rs.getInt(2));

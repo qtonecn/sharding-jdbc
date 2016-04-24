@@ -36,7 +36,7 @@ import org.junit.Test;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 
@@ -369,7 +369,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesO
     }
     
     @Test
-    public void assertGetSQLxmlForColumnIndex() throws SQLException {
+    public void assertGetSQLXMLForColumnIndex() throws SQLException {
         if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
             try {
                 actual.getSQLXML(1);
@@ -381,7 +381,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesO
     }
     
     @Test
-    public void assertGetSQLxmlForColumnLabel() throws SQLException {
+    public void assertGetSQLXMLForColumnLabel() throws SQLException {
         if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
             try {
                 actual.getSQLXML("uid");

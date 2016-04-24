@@ -20,12 +20,13 @@ package com.dangdang.ddframe.rdb.sharding.parser.mysql;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
@@ -42,11 +43,11 @@ public final class MySQLPreparedStatementForOneParameterTest extends AbstractBas
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parser/mysql/preparedstatement/one_param/");
+        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parser/mysql/prepared_statement/one_param/");
     }
     
     @Test
     public void assertParse() {
-        assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Arrays.<Object>asList(1), Arrays.asList("user_id", "order_id", "state")).parse());
+        assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Lists.<Object>newArrayList(1), Arrays.asList("user_id", "order_id", "state")).parse());
     }
 }

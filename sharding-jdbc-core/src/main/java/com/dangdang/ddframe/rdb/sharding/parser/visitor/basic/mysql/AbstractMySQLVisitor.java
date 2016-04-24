@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.expr.SQLBetweenExpr;
@@ -29,7 +30,7 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
@@ -46,7 +47,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     
     private final ParseContext parseContext = new ParseContext();
     
-    public AbstractMySQLVisitor() {
+    protected AbstractMySQLVisitor() {
         super(new SQLBuilder());
         setPrettyFormat(false);
     }
@@ -143,8 +144,8 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
                 parseContext.setHasOrCondition(true);
                 break;
             case Equality: 
-                parseContext.addCondition(x.getLeft(), BinaryOperator.EQUAL, Arrays.asList(x.getRight()), getDatabaseType(), getParameters());
-                parseContext.addCondition(x.getRight(), BinaryOperator.EQUAL, Arrays.asList(x.getLeft()), getDatabaseType(), getParameters());
+                parseContext.addCondition(x.getLeft(), BinaryOperator.EQUAL, Collections.singletonList(x.getRight()), getDatabaseType(), getParameters());
+                parseContext.addCondition(x.getRight(), BinaryOperator.EQUAL, Collections.singletonList(x.getLeft()), getDatabaseType(), getParameters());
                 break;
             default:
                 break;
@@ -154,7 +155,9 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     
     @Override
     public boolean visit(final SQLInListExpr x) {
-        parseContext.addCondition(x.getExpr(), x.isNot() ? BinaryOperator.NOT_IN : BinaryOperator.IN, x.getTargetList(), getDatabaseType(), getParameters());
+        if (!x.isNot()) {
+            parseContext.addCondition(x.getExpr(), BinaryOperator.IN, x.getTargetList(), getDatabaseType(), getParameters());
+        }
         return super.visit(x);
     }
     

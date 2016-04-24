@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;
@@ -46,7 +46,7 @@ import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
     
-    public static final DatabaseType CURRENT_DB_TYPE = DatabaseType.H2;
+    protected static final DatabaseType CURRENT_DB_TYPE = DatabaseType.H2;
     
     private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
     
@@ -107,7 +107,7 @@ public abstract class AbstractDBUnitTest {
         return fileName.substring(0, fileName.lastIndexOf("."));
     }
     
-    protected void assertDataset(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql, final Object... params) 
+    protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql, final Object... params) 
             throws SQLException, DatabaseUnitException {
         try (
                 Connection conn = connection;
@@ -122,7 +122,7 @@ public abstract class AbstractDBUnitTest {
         }
     }
     
-    protected void assertDataset(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql)
+    protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql)
             throws SQLException, DatabaseUnitException {
         try (Connection conn = connection) {
             ITable actualTable = getConnection(connection).createQueryTable(actualTableName, sql);
@@ -131,7 +131,7 @@ public abstract class AbstractDBUnitTest {
         }
     }
     
-    private IDatabaseConnection getConnection(final Connection connection) throws SQLException, DatabaseUnitException {
+    private IDatabaseConnection getConnection(final Connection connection) throws DatabaseUnitException {
         switch (dbEnv.getDatabaseType()) {
             case H2: 
                 return new H2Connection(connection, "PUBLIC");

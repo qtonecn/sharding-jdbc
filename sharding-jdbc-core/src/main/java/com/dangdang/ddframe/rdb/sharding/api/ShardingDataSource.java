@@ -17,13 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfigurationConstant;
+import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
@@ -31,8 +27,14 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
-import com.dangdang.ddframe.rdb.sharding.metrics.ThreadLocalObjectContainer;
 import com.google.common.base.Preconditions;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Properties;
 
 /**
  * 支持分片的数据源.
@@ -41,9 +43,9 @@ import com.google.common.base.Preconditions;
  */
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    private final ThreadLocalObjectContainer threadLocalObjectContainer = new ThreadLocalObjectContainer();
+    private final ShardingProperties shardingProperties;
     
-    private final ShardingContext context;
+    private final ShardingContext shardingContext;
     
     public ShardingDataSource(final ShardingRule shardingRule) {
         this(shardingRule, new Properties());
@@ -52,28 +54,34 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public ShardingDataSource(final ShardingRule shardingRule, final Properties props) {
         Preconditions.checkNotNull(shardingRule);
         Preconditions.checkNotNull(props);
-        ShardingConfiguration configuration = new ShardingConfiguration(props);
-        initThreadLocalObjectContainer(configuration);
-        DatabaseType type;
+        shardingProperties = new ShardingProperties(props);
         try {
-            type = DatabaseType.valueFrom(ShardingConnection.getDatabaseMetaDataFromDataSource(shardingRule.getDataSourceRule().getDataSources()).getDatabaseProductName());
+            shardingContext = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, DatabaseType.valueFrom(getDatabaseProductName(shardingRule))), new ExecutorEngine(shardingProperties));
         } catch (final SQLException ex) {
-            throw new ShardingJdbcException("Can not get database product name", ex);
+            throw new ShardingJdbcException(ex);
         }
-        context = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, type), new ExecutorEngine(configuration));
     }
     
-    private void initThreadLocalObjectContainer(final ShardingConfiguration configuration) {
-        if (configuration.getConfig(ShardingConfigurationConstant.METRICS_ENABLE, boolean.class)) {
-            threadLocalObjectContainer.initItem(new MetricsContext(configuration.getConfig(ShardingConfigurationConstant.METRICS_SECOND_PERIOD, long.class),
-                    configuration.getConfig(ShardingConfigurationConstant.METRICS_PACKAGE_NAME, String.class)));
+    private String getDatabaseProductName(final ShardingRule shardingRule) throws SQLException {
+        String result = null;
+        Collection<Connection> connections = new ArrayList<>(shardingRule.getDataSourceRule().getDataSources().size());
+        for (DataSource each : shardingRule.getDataSourceRule().getDataSources()) {
+            Connection connection = each.getConnection();
+            connections.add(connection);
+            String databaseProductName = connection.getMetaData().getDatabaseProductName();
+            Preconditions.checkState(null == result || result.equals(databaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, databaseProductName));
+            result = databaseProductName;
         }
+        for (Connection each : connections) {
+            each.close();
+        }
+        return result;
     }
     
     @Override
     public ShardingConnection getConnection() throws SQLException {
-        threadLocalObjectContainer.build();
-        return new ShardingConnection(context);
+        MetricsContext.init(shardingProperties);
+        return new ShardingConnection(shardingContext);
     }
     
     @Override

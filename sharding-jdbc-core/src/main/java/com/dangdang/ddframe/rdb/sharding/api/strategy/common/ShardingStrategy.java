@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * 分片策略.
@@ -40,7 +40,7 @@ public class ShardingStrategy {
     private final ShardingAlgorithm shardingAlgorithm;
     
     public ShardingStrategy(final String shardingColumn, final ShardingAlgorithm shardingAlgorithm) {
-        this(Arrays.asList(shardingColumn), shardingAlgorithm);
+        this(Collections.singletonList(shardingColumn), shardingAlgorithm);
     }
     
     /**
@@ -54,7 +54,7 @@ public class ShardingStrategy {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Collection<String> doSharding(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, 
-                                         final Collection<ShardingValue<? extends Comparable<?>>> shardingValues) {
+                                         final Collection<ShardingValue<?>> shardingValues) {
         if (shardingValues.isEmpty()) {
             if (SQLStatementType.INSERT.equals(sqlStatementType) && availableTargetNames.size() > 1) {
                 throw new ShardingJdbcException("INSERT statement must contains sharding value");
@@ -67,7 +67,7 @@ public class ShardingStrategy {
             ShardingValue shardingValue = shardingValues.iterator().next();
             switch (shardingValue.getType()) {
                 case SINGLE: 
-                    return Arrays.asList(singleKeyShardingAlgorithm.doEqualSharding(availableTargetNames, shardingValue));
+                    return Collections.singletonList(singleKeyShardingAlgorithm.doEqualSharding(availableTargetNames, shardingValue));
                 case LIST: 
                     return singleKeyShardingAlgorithm.doInSharding(availableTargetNames, shardingValue);
                 case RANGE: 

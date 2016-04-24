@@ -17,10 +17,6 @@
 
 package com.dangdang.ddframe.rdb.integrate.nullable;
 
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
@@ -32,9 +28,13 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitTest {
     
-    private String dataSourceName = "dataSource_%s";
+    private final String dataSourceName = "dataSource_%s";
     
     @Override
     protected List<String> getSchemaFiles() {
@@ -66,13 +66,13 @@ public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitT
                 "integrate/dataset/nullable/init/nullable_9.xml");
     }
     
-    protected final ShardingDataSource getShardingDataSource() throws SQLException {
+    protected final ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
-        TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule))),
-                new DatabaseShardingStrategy(Arrays.asList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy(Arrays.asList("order_id"), new NoneTableShardingAlgorithm()));
+        TableRule orderTableRule = new TableRule("t_order", Collections.singletonList("t_order"), dataSourceRule);
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Collections.singletonList(orderTableRule), 
+                Collections.singletonList(new BindingTableRule(Collections.singletonList(orderTableRule))),
+                new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
+                new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);
     }
 }

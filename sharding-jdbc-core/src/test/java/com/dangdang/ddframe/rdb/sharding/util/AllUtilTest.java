@@ -22,8 +22,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        StringUtilTest.class, 
         SQLUtilTest.class
-})
+    })
 public class AllUtilTest {
     
 }

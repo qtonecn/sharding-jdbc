@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dangdang.ddframe.rdb.sharding.executor.StatementExecutor;
+import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
@@ -44,7 +45,7 @@ import lombok.Setter;
 /**
  * 支持分片的静态语句对象.
  * 
- * @author gaohongtao
+ * @author gaohongtao, caohao
  */
 public class ShardingStatement extends AbstractStatementAdapter {
     
@@ -70,15 +71,15 @@ public class ShardingStatement extends AbstractStatementAdapter {
     @Setter(AccessLevel.PROTECTED)
     private ResultSet currentResultSet;
     
-    public ShardingStatement(final ShardingConnection shardingConnection) throws SQLException {
+    public ShardingStatement(final ShardingConnection shardingConnection) {
         this(shardingConnection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency) throws SQLException {
+    public ShardingStatement(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency) {
         this(shardingConnection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
+    public ShardingStatement(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.shardingConnection = shardingConnection;
         this.resultSetType = resultSetType;
@@ -146,7 +147,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         mergeContext = sqlRouteResult.getMergeContext();
         mergeContext.setExecutorEngine(shardingConnection.getShardingContext().getExecutorEngine());
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            result.addStatement(each.getSql(), generateStatement(each.getSql(), each.getDataSource()));
+            result.addStatement(new StatementExecutorWrapper(generateStatement(each.getSql(), each.getDataSource()), each));
         }
         return result;
     }
@@ -163,7 +164,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         } else {
             result = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
         }
-        replayMethodsInvovation(result);
+        replayMethodsInvocation(result);
         cachedRoutedStatements.put(hashCode, result);
         return result;
     }
@@ -184,5 +185,10 @@ public class ShardingStatement extends AbstractStatementAdapter {
     @Override
     public Collection<? extends Statement> getRoutedStatements() throws SQLException {
         return cachedRoutedStatements.values();
+    }
+    
+    @Override
+    public void clearRoutedStatements() throws SQLException {
+        cachedRoutedStatements.clear();
     }
 }

@@ -17,10 +17,6 @@
 
 package com.dangdang.ddframe.rdb.integrate.tbl;
 
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
@@ -32,21 +28,25 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUnitTest {
     
-    private String dataSourceName = "dataSource_%s";
+    private final String dataSourceName = "dataSource_%s";
     
     @Override
     protected List<String> getSchemaFiles() {
-        return Arrays.asList("integrate/schema/tbl/db_single.sql");
+        return Collections.singletonList("integrate/schema/tbl/db_single.sql");
     }
     
     @Override
     protected List<String> getDataSetFiles() {
-        return Arrays.asList("integrate/dataset/tbl/init/db_single.xml");
+        return Collections.singletonList("integrate/dataset/tbl/init/db_single.xml");
     }
     
-    protected final ShardingDataSource getShardingDataSource() throws SQLException {
+    protected final ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
         TableRule orderTableRule = new TableRule("t_order", Arrays.asList(
                 "t_order_0", 
@@ -70,8 +70,8 @@ public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUni
                 "t_order_item_7", 
                 "t_order_item_8", 
                 "t_order_item_9"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), 
+                Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
                 new DatabaseShardingStrategy("user_id", new NoneDatabaseShardingAlgorithm()),
                 new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);

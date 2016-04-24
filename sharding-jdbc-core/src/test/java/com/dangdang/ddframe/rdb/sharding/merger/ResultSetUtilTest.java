@@ -114,7 +114,7 @@ public final class ResultSetUtilTest {
         assertThat((BigDecimal) ResultSetUtil.convertValue((short) 1, BigDecimal.class), is(new BigDecimal("1")));
     
         assertThat((Date) ResultSetUtil.convertValue(new Date(0L), Date.class), is(new Date(0L)));
-        assertThat(ResultSetUtil.convertValue((short) 1, Object.class), is((Object)Short.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue((short) 1, Object.class), is((Object) Short.valueOf("1")));
         assertThat(ResultSetUtil.convertValue((short) 1, String.class), is((Object) "1"));
         assertThat(ResultSetUtil.convertValue(null, short.class), is((Object) (short) 0));
         assertThat(ResultSetUtil.convertValue(null, int.class), is((Object) 0));
@@ -127,12 +127,12 @@ public final class ResultSetUtilTest {
     }
     
     @Test
-    public void assertcompareToForAsc() {
+    public void assertCompareToForAsc() {
         assertTrue(ResultSetUtil.compareTo(1, 2, OrderByType.ASC) < 0);
     }
     
     @Test
-    public void assertcompareToForDesc() {
+    public void assertCompareToForDesc() {
         assertFalse(ResultSetUtil.compareTo(1, 2, OrderByType.DESC) < 0);
     }
 }

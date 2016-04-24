@@ -17,21 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.mixed;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Arrays;
-
+import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingTableFactor;
 import org.junit.Test;
 
-import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingTableFactor;
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class CartesianResultTest {
     
     @Test
     public void assertToString() {
         CartesianResult actual = new CartesianResult();
-        CartesianTableReference tableReference = new CartesianTableReference(Arrays.asList(new SingleRoutingTableFactor("logic", "actual")));
+        CartesianTableReference tableReference = new CartesianTableReference(Collections.singletonList(new SingleRoutingTableFactor("logic", "actual")));
         CartesianDataSource dataSource = new CartesianDataSource("ds", tableReference);
         actual.getRoutingDataSources().add(dataSource);
         assertThat(actual.toString(), is("CartesianResult(routingDataSources=[CartesianDataSource(dataSource=ds, "

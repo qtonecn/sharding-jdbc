@@ -17,24 +17,23 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public final class NoneTableShardingAlgorithmTest {
     
     private final NoneTableShardingAlgorithm noneTableShardingAlgorithm = new NoneTableShardingAlgorithm();
     
-    private final Collection<String> targets = Arrays.asList("tbl");
+    private final Collection<String> targets = Collections.singletonList("tbl");
     
     @Test
-    public void assertDoEqualShardingForTargetsEmtpy() {
+    public void assertDoEqualShardingForTargetsEmpty() {
         assertNull(noneTableShardingAlgorithm.doEqualSharding(Collections.<String>emptyList(), null));
     }
     

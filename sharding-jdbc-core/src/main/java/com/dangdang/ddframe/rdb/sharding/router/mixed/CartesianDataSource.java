@@ -17,16 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.mixed;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
-
 import lombok.Getter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 笛卡尔积路由数据源.
@@ -43,7 +42,7 @@ final class CartesianDataSource {
     
     CartesianDataSource(final String dataSource, final CartesianTableReference routingTableReference) {
         this.dataSource = dataSource;
-        routingTableReferences = new ArrayList<>(Arrays.asList(routingTableReference));
+        routingTableReferences = new ArrayList<>(Collections.singletonList(routingTableReference));
     }
     
     Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {

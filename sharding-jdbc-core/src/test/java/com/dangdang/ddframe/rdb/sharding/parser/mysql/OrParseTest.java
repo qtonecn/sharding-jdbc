@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
@@ -50,6 +50,6 @@ public final class OrParseTest extends AbstractBaseParseTest {
     @Test
     public void assertParse() {
         assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Collections.emptyList(), 
-                Arrays.asList("id", "user_id", "name", "age", "days", "fee", "traveldate", "long")).parse());
+                Arrays.asList("id", "user_id", "name", "age", "days", "fee", "travel_date", "long")).parse());
     }
 }

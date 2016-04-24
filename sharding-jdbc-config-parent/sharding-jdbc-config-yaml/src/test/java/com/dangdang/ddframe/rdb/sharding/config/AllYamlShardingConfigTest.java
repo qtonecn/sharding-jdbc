@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +22,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        YamlShardingConfigTest.class,
-})
+@Suite.SuiteClasses(
+        YamlShardingConfigTest.class
+    )
 public class AllYamlShardingConfigTest {
 }
