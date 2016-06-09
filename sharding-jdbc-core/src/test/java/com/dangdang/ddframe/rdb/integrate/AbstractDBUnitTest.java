@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -77,10 +77,10 @@ public abstract class AbstractDBUnitTest {
     
     protected abstract List<String> getDataSetFiles();
     
-    protected final Map<String, DataSource> createDataSourceMap(final String dataSourceName) {
+    protected final Map<String, DataSource> createDataSourceMap(final String dataSourceNamePattern) {
         Map<String, DataSource> result = new HashMap<>(getDataSetFiles().size());
         for (String each : getDataSetFiles()) {
-            result.put(String.format(dataSourceName, getFileName(each)), createDataSource(each));
+            result.put(String.format(dataSourceNamePattern, getFileName(each)), createDataSource(each));
         }
         return result;
     }
@@ -111,7 +111,7 @@ public abstract class AbstractDBUnitTest {
             throws SQLException, DatabaseUnitException {
         try (
                 Connection conn = connection;
-                PreparedStatement ps = connection.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
             for (Object each : params) {
                 ps.setObject(i++, each);
@@ -125,7 +125,7 @@ public abstract class AbstractDBUnitTest {
     protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql)
             throws SQLException, DatabaseUnitException {
         try (Connection conn = connection) {
-            ITable actualTable = getConnection(connection).createQueryTable(actualTableName, sql);
+            ITable actualTable = getConnection(conn).createQueryTable(actualTableName, sql);
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
         }

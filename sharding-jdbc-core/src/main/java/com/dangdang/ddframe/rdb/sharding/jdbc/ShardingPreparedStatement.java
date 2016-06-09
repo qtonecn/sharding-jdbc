@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,8 @@ import java.util.List;
 /**
  * 支持分片的预编译语句对象.
  * 
- * @author zhangliang, caohao
+ * @author zhangliang
+ * @author caohao
  */
 public final class ShardingPreparedStatement extends AbstractPreparedStatementAdapter {
     
@@ -91,8 +92,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public ResultSet executeQuery() throws SQLException {
         hasExecuted = true;
-        setCurrentResultSet(ResultSetFactory.getResultSet(new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                getRoutedPreparedStatements()).executeQuery(), getMergeContext()));
+        setCurrentResultSet(ResultSetFactory.getResultSet(
+                new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), getRoutedPreparedStatements()).executeQuery(), getMergeContext()));
         return getCurrentResultSet();
     }
     
@@ -152,11 +153,6 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         });
     }
     
-    @Override
-    public void clearRoutedStatements() throws SQLException {
-        getRoutedPreparedStatements().clear();
-    }
-    
     private void routeIfNeed() throws SQLException {
         if (!cachedRoutedPreparedStatements.isEmpty()) {
             return;
@@ -168,10 +164,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         List<PreparedStatementExecutorWrapper> result = new ArrayList<>();
         SQLRouteResult sqlRouteResult = getShardingConnection().getShardingContext().getSqlRouteEngine().route(sql, parameters);
         MergeContext mergeContext = sqlRouteResult.getMergeContext();
-        mergeContext.setExecutorEngine(getShardingConnection().getShardingContext().getExecutorEngine());
         setMergeContext(mergeContext);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            PreparedStatement preparedStatement = generatePrepareStatement(getShardingConnection().getConnection(each.getDataSource()), each.getSql());
+            PreparedStatement preparedStatement = generatePrepareStatement(getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlStatementType()), each.getSql());
             replayMethodsInvocation(preparedStatement);
             setParameters(preparedStatement, parameters);
             result.add(new PreparedStatementExecutorWrapper(preparedStatement, parameters, each));

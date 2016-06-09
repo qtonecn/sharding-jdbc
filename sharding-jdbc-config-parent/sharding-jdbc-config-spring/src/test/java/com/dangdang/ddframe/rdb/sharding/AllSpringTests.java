@@ -21,25 +21,31 @@ import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceDefaultStr
 import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmClassAndPropsTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmClassTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmExpressionForDynamicTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmExpressionTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceBindingTablesTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDefaultStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDifferentTablesTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForIndicatedDataSourceNamesTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForMasterSlaveTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    WithNamespaceAlgorithmClassTest.class,
-    WithNamespaceAlgorithmClassAndPropsTest.class,
+    WithNamespaceAlgorithmClassTest.class, 
+    WithNamespaceAlgorithmClassAndPropsTest.class, 
+    WithNamespaceDifferentTablesTest.class, 
+    WithNamespaceAlgorithmExpressionTest.class, 
+    WithNamespaceAlgorithmExpressionForDynamicTest.class, 
+    WithNamespaceDefaultStrategyTest.class, 
+    WithNamespaceBindingTablesTest.class, 
+    WithoutNamespaceTest.class, 
+    WithoutNamespaceDefaultStrategyTest.class, 
     WithNamespaceDifferentTablesTest.class,
-    WithNamespaceAlgorithmExpressionTest.class,
-    WithNamespaceDefaultStrategyTest.class,
-    WithNamespaceBindingTablesTest.class,
-    WithoutNamespaceTest.class,
-    WithoutNamespaceDefaultStrategyTest.class,
-    WithNamespaceDifferentTablesTest.class
+    WithNamespaceForIndicatedDataSourceNamesTest.class,
+    WithNamespaceForMasterSlaveTest.class
     })
 public class AllSpringTests {
 }
